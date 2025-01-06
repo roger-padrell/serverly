@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "Roger Padrell"
-description   = "A Good Server - A HTTP server in NIM inspired by Express.js and oak."
+description   = "HTTP serving made eazy"
 license       = "MIT"
 srcDir        = "src"
 
