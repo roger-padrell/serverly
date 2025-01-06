@@ -47,7 +47,7 @@ Now, if you send a GET request to localhost:8000 you will get `Hello world` as a
 
 ### POST
 To use a post method, you just have to run `Router.post`.
-In post requests, there is usually a body, wich you can acces with `req.body.text()` or `req.body.json()` depending on the type of data you're expecting.
+In post requests, there is usually a body, which you can acces with `req.body.text()` or `req.body.json()` depending on the type of data you're expecting.
 ```
 # ...Import serverly and initialize the Router
 
