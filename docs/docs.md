@@ -10,7 +10,7 @@ This documentation is made of examples on how to use Serverly.
     - [Other methods](#other-methods)
 - [Params](#params)
     - [Item Params](#item-params)
-    - [URL Params](#url-params)
+    - [Query Params](#query-params)
 
 ## Router
 The router is the core of your server. It's used to define the different entries where requests can be sent.
@@ -79,14 +79,14 @@ You can also use `Router.head` and `Router.options` in the same way as previous 
 ## Params
 There are two types of params:
 - Item params (`/id/1000`)
-- URL params (`app?id=1000`)
+- Query params (`app?id=1000`)
 
 You can use them as follows
 
 ### Item params
 As previously stated, item params are the ones that get included in the path as if they where part of the route.
 To define item params in the path, use `:paramName`
-To acces item params you can use `Request.itemParams.get`
+To access item params you can use `Request.itemParams.get`
 ```
 # ...Import serverly and initialize the Router
 
@@ -97,5 +97,18 @@ rout.get("/item/:id", proc(req: Request, res: Response) =
 # ...Import serverly and initialize the Router
 ```
 
-### URL params
-These are not implemented yet, but are expected to come in the following Serverly version.
+### Query params
+As previously stated, query parameters are the ones that follow the path and don't affect it (the server will serve the same route to /app and /app?a=10), but these can also be accessed by the server.
+Query parameters do not need to be previously defined, unlike item params.
+You can access query params with `Request.queryParams.get`
+```
+# ...Import serverly and initialize the Router
+
+rout.get("/item/", proc(req: Request, res: Response) = 
+  res.send("Item ID: " & req.queryParams.get("id"))
+)
+
+# ...Import serverly and initialize the Router
+```
+Now, if the a request is send at "/item?id=10" it will return: "Item ID: 10"
+Keep in mind that if a request is send without the id param, it will be accepted, but checking the id query param will give an error. This makes item params more secure for required parameters and query params better for optional ones.

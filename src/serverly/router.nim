@@ -1,4 +1,4 @@
-import parser, templated, types
+import parser, params, types
 import net, strutils
 import terminal
 
@@ -23,19 +23,20 @@ proc options*(targetRouter: var Router, path: string, handler: RouteHandler) =
 proc callRoute*(rout: Route, client: Socket, parsed: SemiParsedRequest, router:Router, origin: string) = 
     # TODO: Use parseParams to get fully parsed request
     let fullParsed = parsed.parseParams(rout);
-    let request = Request(body: parsed.body, path: parsed.path, httpMethod: parsed.httpMethod, origin: origin, itemParams:fullParsed.itemParams);
+    let request = Request(body: parsed.body, path: parsed.path, httpMethod: parsed.httpMethod, origin: origin, itemParams:fullParsed.itemParams, queryParams:fullParsed.queryParams);
     let response = Response(client: client, origin: origin, path: parsed.path, httpMethod: parsed.httpMethod);
     rout.handler(request, response);
 
 proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, origin: string) = 
     var match: bool = false;
     for rout in router.routes:
-        if rout.httpMethod == parsed.httpMethod and rout.path == parsed.path:
+        let pathWithoutQueryParams = parsed.path.split("?")[0]
+        if rout.httpMethod == parsed.httpMethod and rout.path == pathWithoutQueryParams:
             # call
             rout.callRoute(client, parsed, router, origin)
             match=true;
             break;
-        elif parsed.path.isTemplated(rout.path):
+        elif pathWithoutQueryParams.isTemplated(rout.path):
             # call
             rout.callRoute(client, parsed, router, origin)
             match=true;

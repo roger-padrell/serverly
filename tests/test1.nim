@@ -10,4 +10,8 @@ rout.get("/hello/:name/:sname", proc (req: Request, res: Response) =
   res.send("Hello " & req.itemParams.get("name") & " " & req.itemParams.get("sname"))
 )
 
-rout.start(8080)
+rout.get("/qparams", proc (req: Request, res: Response) = 
+  res.send("Recieved a is equal to: " & req.queryParams.get("a"))
+) 
+
+rout.start(8000)

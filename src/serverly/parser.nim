@@ -1,38 +1,26 @@
 import net, strutils
-import tables, templated, types
-from std/sequtils import zip
+import tables, params, types
 
 proc parseParams*(parsed: SemiParsedRequest, rout: Route): ParsedRequest = 
-    # Item Params
-    # It does not have item params or format is incorrect
-    if not parsed.path.isTemplated(rout.path):
-        let tb = initTable[string,string]()
-        # Return
-        return ParsedRequest(httpMethod: parsed.httpMethod, path: parsed.path, body: parsed.body, raw: parsed.raw, itemParams: tb)
+    # Item params
+    # Use params.getParamsFromString
+    var itemParams = parsed.path.split("?")[0].getParamsFromString(rout.path)
 
-    # Start formatting strings
-    let strSplit = formatString(parsed.path).split("/");
-    let templSplit = formatString(rout.path).split("/")
-    # Remove all non-params in both lists
-    var mutStr = strSplit;
-    var mutTempl = templSplit;
-    mutStr.delete(0)
-    for t in templSplit:
-        if not t.startsWith(":"):
-            mutTempl.delete(mutTempl.find(t))
-
-    # Create table and fill it with pairs
-    var tb = initTable[string,string]()
-    for pairs in zip(mutTempl, mutStr):
-        let (mutTempl, mutStr) = pairs
-        tb[mutTempl.replace(":","")] = mutStr
+    # Query params
+    # Use params.getQueryParams
+    var queryParams: Table[string,string]
+    if len(parsed.path.split("?")) > 1:
+        queryParams = parsed.path.split("?")[1].getQueryParams()
+    else: 
+        queryParams = initTable[string,string]()
 
     # Return
-    return ParsedRequest(httpMethod: parsed.httpMethod, path: parsed.path, body: parsed.body, raw: parsed.raw, itemParams: tb)
+    return ParsedRequest(httpMethod: parsed.httpMethod, path: parsed.path, body: parsed.body, raw: parsed.raw, itemParams: itemParams, queryParams: queryParams)
 
-proc get*(params: ItemParams, key: string): string = 
+proc get*(params: Params, key: string): string = 
     return params.getOrDefault(key);
 
+# The following code is dark magic, do not touch or you will die :)
 proc parseRequest*(client: Socket): SemiParsedRequest = 
     var requestSeq: seq[string] = @[]
     var line = ""

@@ -7,14 +7,16 @@ type
         httpMethod*: string
         path*: string
 
-    ItemParams* = Table[string, string]
+    Params* = Table[string, string]
+
     
     Request* = object
         body*: string
         path*: string
         httpMethod*: string
         origin*: string
-        itemParams*: ItemParams
+        itemParams*: Params
+        queryParams*: Params
 
     RouteHandler* = proc(req: Request, res: Response)
 
@@ -37,3 +39,4 @@ type
         body*: string
         raw*: string
         itemParams*: Table[string, string]
+        queryParams*: Table[string, string]
