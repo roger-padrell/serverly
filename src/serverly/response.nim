@@ -1,6 +1,7 @@
-import net, strutils, terminal, types
+import net, strutils, terminal, types, statusLib
 
-proc send*(resp: Response, content: string, statusCode:int=200, statusText:string="OK", contentType:string="text/plain") = 
+proc send*(resp: Response, content: string, statusCode:int=status.OK, contentType:string="text/plain") = 
+    let statusText: string = statusMessage.get(statusCode)
     try: 
         let response = "HTTP/1.1 %STATUS-CODE% %STATUS-TEXT%\r\nContent-Type: %CONTENT-TYPE%\r\nContent-Length: %CONTENTLEN%\r\n\r\n%CONTENT%"
             .replace("%STATUS-CODE%",$statusCode)

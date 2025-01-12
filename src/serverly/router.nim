@@ -1,5 +1,5 @@
 import parser, params, types
-import net, strutils, sequtils
+import net, strutils
 import terminal
 
 var openedPorts: seq[Socket] = @[]
