@@ -24,6 +24,7 @@ type
         httpMethod*: string
         path*: string
         handler*: RouteHandler
+        description*:string
 
     Router* = object
         routes*: seq[Route]

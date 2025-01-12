@@ -1,27 +1,43 @@
 import parser, params, types
-import net, strutils
+import net, strutils, sequtils
 import terminal
+
+var openedPorts: seq[Socket] = @[]
 
 proc initRouter*(): Router =
     return Router(routes: @[]);
 
-proc get*(targetRouter: var Router, path: string, handler: RouteHandler) = 
-    targetRouter.routes.add(Route(path: path, httpMethod: "GET", handler: handler))
+proc removeRepeatedRoute*(targetRouter: var Router, path: string) = 
+    for r in targetRouter.routes:
+        if r.path == path:
+            targetRouter.routes.delete(targetRouter.routes.find(r))
 
-proc post*(targetRouter: var Router, path: string, handler: RouteHandler) = 
-    targetRouter.routes.add(Route(path: path, httpMethod: "POST", handler: handler))
+proc get*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "GET", handler: handler, description:description))
+
+proc post*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "POST", handler: handler, description:description))
     
-proc put*(targetRouter: var Router, path: string, handler: RouteHandler) = 
-    targetRouter.routes.add(Route(path: path, httpMethod: "PUT", handler: handler))
+proc put*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "PUT", handler: handler, description:description))
 
-proc head*(targetRouter: var Router, path: string, handler: RouteHandler) = 
-    targetRouter.routes.add(Route(path: path, httpMethod: "HEAD", handler: handler))
+proc head*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "HEAD", handler: handler, description:description))
 
-proc options*(targetRouter: var Router, path: string, handler: RouteHandler) = 
-    targetRouter.routes.add(Route(path: path, httpMethod: "OPTIONS", handler: handler))
+proc options*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "OPTIONS", handler: handler, description:description))
+
+proc delete*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
+    targetRouter.removeRepeatedRoute(path)
+    targetRouter.routes.add(Route(path: path, httpMethod: "DELETE", handler: handler, description:description))
 
 proc callRoute*(rout: Route, client: Socket, parsed: SemiParsedRequest, router:Router, origin: string) = 
-    # TODO: Use parseParams to get fully parsed request
+    # Use parseParams to get fully parsed request
     let fullParsed = parsed.parseParams(rout);
     let request = Request(body: parsed.body, path: parsed.path, httpMethod: parsed.httpMethod, origin: origin, itemParams:fullParsed.itemParams, queryParams:fullParsed.queryParams);
     let response = Response(client: client, origin: origin, path: parsed.path, httpMethod: parsed.httpMethod);
@@ -46,7 +62,20 @@ proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, or
     if not match:
         styledEcho(fgRed, parsed.httpMethod & " " & parsed.path & " " & origin & " 404 (Not Found)")
         client.send("HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: " & $len("Not Found") & "\r\n\r\nNot Found")
+        let index = openedPorts.find(client)
+        if index >= 0:
+            delete(openedPorts, index)
         client.close()
+
+# Create a gracefull server shutdown
+proc onCtrlC() {.noconv.} =
+    echo "Closing server and cleaning"
+    for socket in openedPorts:
+        socket.close()
+    # Add your cleanup code here
+    quit(0) # Exit the program gracefully
+
+setControlCHook(onCtrlC)
 
 proc start*(router: Router, portNumber: int, verbose:bool=false) = 
     let socket = newSocket()
@@ -55,13 +84,16 @@ proc start*(router: Router, portNumber: int, verbose:bool=false) =
     except:
         echo "Error in creating port. It may be already in use or the current user does not have rights to create ports."
     socket.listen()
+    openedPorts.add(socket)
     var client: Socket
     if verbose==true:
         echo "Started listening on port portN".replace("portN", $portNumber)
+
     while true:
         socket.accept(client)
 
         # Recieved request
+        openedPorts.add(client)
         let clientAddress = client.getPeerAddr()
         let parsed: SemiParsedRequest = parseRequest(client)
         client.filterRequest(parsed, router, clientAddress[0])

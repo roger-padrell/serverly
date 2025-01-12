@@ -1,3 +1,2 @@
-import serverly/router, serverly/request, serverly/response, serverly/types, serverly/parser
-
-export router, request, response, types, parser
+import serverly/router, serverly/request, serverly/response, serverly/types, serverly/parser, serverly/docs
+export router, request, response, types, parser, docs

@@ -7,10 +7,12 @@ This documentation is made of examples on how to use Serverly.
     - [GET](#get)
     - [POST](#post)
     - [PUT](#put)
+    - [DELETE](#delete)
     - [Other methods](#other-methods)
 - [Params](#params)
     - [Item Params](#item-params)
     - [Query Params](#query-params)
+- [Documentation generator](#docs)
 
 ## Router
 The router is the core of your server. It's used to define the different entries where requests can be sent.
@@ -30,7 +32,7 @@ rout.start(8000) # Start at port 8000
 
 
 ## Methods
-These are the methods available with serverly
+These are the methods available with serverly:
 
 ### GET
 To use a get method, you just have to run `Router.get`.
@@ -73,6 +75,20 @@ rout.put("/", proc(req: Request, res: Response) =
 ```
 Now, if you send a PUT request to localhost:8000 with the body `something` you will get `Recieved: something` as a response.
 
+### DELETE
+To use a delete method, you just have to run `Router.delete`.
+In delete requests, there is usually a body, wich you can acces with `req.body.text()` or `req.body.json()` depending on the type of data you're expecting.
+```
+# ...Import serverly and initialize the Router
+
+rout.delete("/", proc(req: Request, res: Response) = 
+  res.send("Recieved: " & req.body.text())
+)
+
+# ...Import serverly and initialize the Router
+```
+Now, if you send a DELETE request to localhost:8000 with the body `something` you will get `Recieved: something` as a response.
+
 ### Other methods
 You can also use `Router.head` and `Router.options` in the same way as previous methods, and I'll be adding more in the future.
 
@@ -112,3 +128,30 @@ rout.get("/item/", proc(req: Request, res: Response) =
 ```
 Now, if the a request is send at "/item?id=10" it will return: "Item ID: 10"
 Keep in mind that if a request is send without the id param, it will be accepted, but checking the id query param will give an error. This makes item params more secure for required parameters and query params better for optional ones.
+
+## Docs
+The documentation generator (docs) is very easy to use.
+You just use `Router.docs`.
+```
+# ...Import serverly and initialize the Router
+# ... Add some requests
+
+rout.docs()
+
+# ...Import serverly and initialize the Router
+```
+
+The default path for docs is `/docs`, but you can change it with `Router.docs("/custom_path")`
+
+Also, when adding a request, you can set it's description so it will appear at the documentation like this:
+```
+# ...Import serverly and initialize the Router
+
+rout.get("/", proc(req: Request, res: Response) = 
+  res.send("Hello world")
+, description="Send a request to get 'Hello world'!"
+)
+
+rout.docs()
+# ... Start the router
+```
