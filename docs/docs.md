@@ -16,6 +16,7 @@ This documentation is made of examples on how to use `serverly`.
 - [Constants](#constants)
     - [Status codes and messages](#status-codes-and-messages)
     - [Content type](#content-type)
+- 
 
 ## Router
 The router is the core of your server. It's used to define the different entries where requests can be sent.
@@ -307,3 +308,18 @@ Here you can see all implemented content-types:
 | `ogg`                  | `audio/ogg`                          |
 | `avi`                  | `video/x-msvideo`                    |
 | `binary`               | `application/octet-stream`           |
+
+
+## Headers
+To read the headers from a request, use `Request.headers`.
+These can be "Content-Lenght", "Content-Type", "User-Agent"... Any header that the request's sender adds.
+
+```
+# ...Import serverly and initialize the Router
+
+rout.get("/", proc(req: Request, res: Response) = 
+  res.send("User-Agent: ", req.headers.get("User-Agent")) # Read the "User-Agent" header
+)
+
+# ... Start the router
+```

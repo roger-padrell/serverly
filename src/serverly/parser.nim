@@ -15,7 +15,7 @@ proc parseParams*(parsed: SemiParsedRequest, rout: Route): ParsedRequest =
         queryParams = initTable[string,string]()
 
     # Return
-    return ParsedRequest(httpMethod: parsed.httpMethod, path: parsed.path, body: parsed.body, raw: parsed.raw, itemParams: itemParams, queryParams: queryParams)
+    return ParsedRequest(httpMethod: parsed.httpMethod, path: parsed.path, body: parsed.body, raw: parsed.raw, itemParams: itemParams, queryParams: queryParams, headers: parsed.headers)
 
 proc get*(params: Params, key: string): string = 
     return params.getOrDefault(key);
@@ -29,20 +29,22 @@ proc parseRequest*(client: Socket): SemiParsedRequest =
         client.readLine(line)
         requestSeq.add(line)  # First line
 
-        # Get data
+        # Get headers
+        var headers: Table[string,string] = initTable[string,string]()
         while true:
             var line = ""
             client.readLine(line)
             if len("l line".replace("line",line))==4:
                 break  # Blank line marks the end of headers
             requestSeq.add("\r\n" & line)  # Add headers
+        # Parse headers
+        for header in requestSeq:
+            headers[header.split(":")[0]] = header.split(":")[1]
 
         # Parse Content-Length header
         var contentLength = 0
-        for header in requestSeq:
-            if "Content-Length:" in header:
-                contentLength = parseInt(header.split(":")[1].strip())
-                break
+        if headers.hasKey("Content-Length"):
+            contentLength = parseInt(headers.get("Content-Length"))
         
         var body = ""
         if contentLength > 0:
@@ -55,7 +57,7 @@ proc parseRequest*(client: Socket): SemiParsedRequest =
 
         # return
         
-        let recivedReq = SemiParsedRequest(httpMethod:splitted[0], path:splitted[1], body:body, raw: $requestSeq)
+        let recivedReq = SemiParsedRequest(httpMethod:splitted[0], path:splitted[1], body:body, raw: $requestSeq, headers: headers)
         return(recivedReq)
     except:
         styledEcho(fgRed, "Error handling request")

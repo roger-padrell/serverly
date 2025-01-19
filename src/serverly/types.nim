@@ -35,6 +35,7 @@ type
         path*: string
         body*: string
         raw*: string
+        headers*: Table[string,string]
     ParsedRequest* = object
         httpMethod*: string
         path*: string
@@ -42,3 +43,4 @@ type
         raw*: string
         itemParams*: Table[string, string]
         queryParams*: Table[string, string]
+        headers*: Table[string, string]
