@@ -1,0 +1,10 @@
+# Ignore binary and executable files in the tests/ directory
+tests/*.[oa]       # Object files (.o) and archive files (.a)
+tests/*.so         # Shared libraries
+tests/*.dll        # Dynamic-link libraries (Windows)
+tests/*.exe        # Executable files (Windows)
+tests/*.out        # Output files (Linux/Unix)
+tests/*.bin        # Binary files
+tests/*.[dD]SYM    # Debug symbols
+tests/*.elf        # Executable and Linkable Format (Linux/Unix)
+tests/*.class      # Compiled Java bytecode

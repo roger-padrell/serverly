@@ -12,7 +12,6 @@ rout.get("/hello/:name/:sname", proc (req: Request, res: Response) =
 
 rout.get("/qparams", proc (req: Request, res: Response) = 
   res.send("Recieved a is equal to: " & req.queryParams.get("a"), statusCode=status.OK)
-, description="Hello"
 )
 
 rout.docs()
