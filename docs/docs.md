@@ -16,7 +16,7 @@ This documentation is made of examples on how to use `serverly`.
 - [Constants](#constants)
     - [Status codes and messages](#status-codes-and-messages)
     - [Content type](#content-type)
-- 
+- [Headers](#headers)
 
 ## Router
 The router is the core of your server. It's used to define the different entries where requests can be sent.
