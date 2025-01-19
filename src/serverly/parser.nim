@@ -1,5 +1,5 @@
 import net, strutils
-import tables, params, types
+import tables, params, types, terminal
 
 proc parseParams*(parsed: SemiParsedRequest, rout: Route): ParsedRequest = 
     # Item params
@@ -20,7 +20,6 @@ proc parseParams*(parsed: SemiParsedRequest, rout: Route): ParsedRequest =
 proc get*(params: Params, key: string): string = 
     return params.getOrDefault(key);
 
-# The following code is dark magic, do not touch or you will die :)
 proc parseRequest*(client: Socket): SemiParsedRequest = 
     var requestSeq: seq[string] = @[]
     var line = ""
@@ -59,4 +58,4 @@ proc parseRequest*(client: Socket): SemiParsedRequest =
         let recivedReq = SemiParsedRequest(httpMethod:splitted[0], path:splitted[1], body:body, raw: $requestSeq)
         return(recivedReq)
     except:
-        echo "Error handling request"
+        styledEcho(fgRed, "Error handling request")

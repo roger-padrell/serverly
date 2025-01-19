@@ -68,7 +68,7 @@ proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, or
         client.close()
 
 proc close*(rout: var Router) = 
-    echo "Closing server and cleaning"
+    styledEcho(fgBlue, "Closing server and cleaning")
     rout.running=false;
     for socket in openedPorts:
         socket.close()
@@ -86,12 +86,12 @@ proc start*(router: var Router, portNumber: int, verbose:bool=false) {.async.} =
     try: 
         socket.bindAddr(Port(portNumber))
     except:
-        echo "Error in creating port. It may be already in use or the current user does not have rights to create ports."
+        styledEcho(fgRed, "Error in creating port. It may be already in use or the current user does not have rights to create ports.")
     socket.listen()
     openedPorts.add(socket)
     var client: Socket
     if verbose==true:
-        echo "Started listening on port portN".replace("portN", $portNumber)
+        styledEcho(fgBlue, "Started listening on port portN".replace("portN", $portNumber))
 
     while router.running:
         socket.accept(client)

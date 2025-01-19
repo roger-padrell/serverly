@@ -13,4 +13,4 @@ proc send*(resp: Response, content: string, statusCode:int=status.OK, contentTyp
         resp.client.close()
         styledEcho(fgGreen, resp.httpMethod & " " & resp.path & " " & resp.origin & " " & $statusCode & " (" & statusText & ")")
     except:
-        echo "Error when sending"
+        styledEcho(fgRed, "Error sending response")
