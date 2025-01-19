@@ -12,6 +12,15 @@ proc removeRepeatedRoute*(targetRouter: var Router, path: string) =
         if r.path == path:
             targetRouter.routes.delete(targetRouter.routes.find(r))
 
+#[ 
+Available methods for the router:
+- GET
+- POST
+- PUT
+- HEAD
+- OPTIONS
+- DELETE
+]#
 proc get*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
     targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "GET", handler: handler, description:description))
@@ -36,29 +45,44 @@ proc delete*(targetRouter: var Router, path: string, handler: RouteHandler, desc
     targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "DELETE", handler: handler, description:description))
 
+#[
+Route filtering and calling.
+The "filterRequest" function takes a request and semi-parsed request data, 
+and filters throughout all requests in the router and call a route with callRoute 
+if one of the routes match with the request.
+
+The "callRoute" function takes a route to call with a semi-parsed request data, 
+parses the full request data, creates the request and response objects and
+calls the route's handler.
+]#
 proc callRoute*(rout: Route, client: Socket, parsed: SemiParsedRequest, router:Router, origin: string) = 
     # Use parseParams to get fully parsed request
     let fullParsed = parsed.parseParams(rout);
+    # Create request and response objects
     let request = Request(body: parsed.body, path: parsed.path, httpMethod: parsed.httpMethod, origin: origin, itemParams:fullParsed.itemParams, queryParams:fullParsed.queryParams);
     let response = Response(client: client, origin: origin, path: parsed.path, httpMethod: parsed.httpMethod);
+    # Call the route's handler
     rout.handler(request, response);
 
 proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, origin: string) = 
     var match: bool = false;
+    # Search for a match
     for rout in router.routes:
         let pathWithoutQueryParams = parsed.path.split("?")[0]
+        # No-parameter match
         if rout.httpMethod == parsed.httpMethod and rout.path == pathWithoutQueryParams:
             # call
             rout.callRoute(client, parsed, router, origin)
             match=true;
             break;
+        # Match including item params
         elif pathWithoutQueryParams.isTemplated(rout.path):
             # call
             rout.callRoute(client, parsed, router, origin)
             match=true;
             break;
             
-    # 404 Not found
+    # Match not found, return a 404 error
     if not match:
         styledEcho(fgRed, parsed.httpMethod & " " & parsed.path & " " & origin & " 404 (Not Found)")
         client.send("HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: " & $len("Not Found") & "\r\n\r\nNot Found")
