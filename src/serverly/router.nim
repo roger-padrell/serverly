@@ -4,6 +4,8 @@ import terminal
 
 var openedPorts: seq[Socket] = @[]
 
+var running* = true;
+
 proc initRouter*(): Router =
     return Router(routes: @[]);
 
@@ -67,11 +69,14 @@ proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, or
             delete(openedPorts, index)
         client.close()
 
-# Create a gracefull server shutdown
-proc onCtrlC() {.noconv.} =
+proc close*(rout: Router) = 
     echo "Closing server and cleaning"
+    running=false;
     for socket in openedPorts:
         socket.close()
+
+# Create a gracefull server shutdown
+proc onCtrlC() {.noconv.} =
     # Add your cleanup code here
     quit(0) # Exit the program gracefully
 
@@ -89,7 +94,7 @@ proc start*(router: Router, portNumber: int, verbose:bool=false) =
     if verbose==true:
         echo "Started listening on port portN".replace("portN", $portNumber)
 
-    while true:
+    while running:
         socket.accept(client)
 
         # Recieved request

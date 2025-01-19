@@ -1,4 +1,6 @@
+import unittest
 import serverly/contentTypes
 
-echo contype.plainText
-echo contype.html
+test "Content-Type":
+    assert contype.plainText == "text/plain"
+    assert contype.html == "text/html"

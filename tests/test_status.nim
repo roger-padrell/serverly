@@ -1,4 +1,6 @@
+import unittest
 import serverly/statusLib
 
-echo status.OK
-echo statusMessage.get(200)
+test "Status codes and messages":
+    assert status.OK == 200
+    assert statusMessage.get(200) == "OK"
