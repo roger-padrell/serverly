@@ -1,10 +1,8 @@
 import parser, params, types
-import net, strutils
+import net, strutils, asyncdispatch
 import terminal
 
 var openedPorts: seq[Socket] = @[]
-
-var running* = true;
 
 proc initRouter*(): Router =
     return Router(routes: @[]);
@@ -69,9 +67,9 @@ proc filterRequest*(client: Socket, parsed: SemiParsedRequest, router:Router, or
             delete(openedPorts, index)
         client.close()
 
-proc close*(rout: Router) = 
+proc close*(rout: var Router) = 
     echo "Closing server and cleaning"
-    running=false;
+    rout.running=false;
     for socket in openedPorts:
         socket.close()
 
@@ -82,7 +80,8 @@ proc onCtrlC() {.noconv.} =
 
 setControlCHook(onCtrlC)
 
-proc start*(router: Router, portNumber: int, verbose:bool=false) = 
+proc start*(router: var Router, portNumber: int, verbose:bool=false) {.async.} = 
+    router.running = true;
     let socket = newSocket()
     try: 
         socket.bindAddr(Port(portNumber))
@@ -94,7 +93,7 @@ proc start*(router: Router, portNumber: int, verbose:bool=false) =
     if verbose==true:
         echo "Started listening on port portN".replace("portN", $portNumber)
 
-    while running:
+    while router.running:
         socket.accept(client)
 
         # Recieved request

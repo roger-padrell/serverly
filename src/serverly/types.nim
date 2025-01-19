@@ -28,6 +28,7 @@ type
 
     Router* = object
         routes*: seq[Route]
+        running*: bool
 
     SemiParsedRequest* = object
         httpMethod*: string
