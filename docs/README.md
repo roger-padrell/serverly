@@ -2,7 +2,7 @@
 HTTP serving made easy
 
 ## Version
-The current latest version is [v0.1.3](https://github.com/roger-padrell/serverly/releases/tag/v0.1.3) (you cant check it [here](https://github.com/roger-padrell/serverly/releases), if you want).
+The current latest version is [v0.1.4](https://github.com/roger-padrell/serverly/releases/tag/v0.1.4) (you cant check it [here](https://github.com/roger-padrell/serverly/releases), if you want).
 
 ## Installation 
 You need nim and nimble, which can be installed [here](https://nim-lang.org/install.html)
