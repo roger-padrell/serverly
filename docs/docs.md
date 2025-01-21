@@ -17,6 +17,9 @@ This documentation is made of examples on how to use `serverly`.
     - [Status codes and messages](#status-codes-and-messages)
     - [Content type](#content-type)
 - [Headers](#headers)
+- [Static serving](#static-serving)
+  - [Single-file serving](#serving-single-files)
+  - [Directory serving](#serving-directories)
 
 ## Router
 The router is the core of your server. It's used to define the different entries where requests can be sent.
@@ -323,3 +326,51 @@ rout.get("/", proc(req: Request, res: Response) =
 
 # ... Start the router
 ```
+
+## Static serving
+You can also serve static assets like documents, images or complete directories.
+
+When working with paths with NIM, you can use `./` (like in `./file.txt`) to access files relative to path where the program is stored, and `$/` (like in `$/file.txt`) to access files relative to the directory where the program is running or has been called.
+
+### Serving single files
+To serve a static file, use `Router.serveSingleFile`:
+```
+# ...Import serverly and initialize the Router
+
+rout.serveSingleFile("./file.txt") # If a "file.txt" exists in the same directory as the program.
+
+# ... Start the router
+```
+You can serve a lot of file types, all of which you can see at the [Content-Type library](#content-type).
+
+You can also customize the path where the file will be served in the router and decide to hide the file extension (**true** by default):
+
+```
+# ...Import serverly and initialize the Router
+
+rout.serveSingleFile("./file.txt", "/file", true) # If a "file.txt" exists in the same directory as the program.
+# Get the file at /file
+
+# ... Start the router
+```
+Even if you include the extension when writing the target path for serving, if extension-hiding is active the extension will not be used.
+
+### Serving directories
+To serve an entire directory, use `Router.serveDirectory`:
+```
+# ...Import serverly and initialize the Router
+
+rout.serveDirectory("./folder") # If a "/folder" exists in the same directory as the program.
+
+# ... Start the router
+```
+As when serving single files, you can customize the target serving path and if the extensions from the files in the directory will be used. Keep in mind that this method will also serve subfolders.
+
+In an example, if a directory structure is like this:
+```
+folder/
+├── file.txt
+└── subfolder/
+    └── subfile.txt
+```
+and you serve the "folder" at `/folder`, you will get the `file.txt` at `/folder/file` and the `subfile.txt` at `/folder/subfolder/subfile`.

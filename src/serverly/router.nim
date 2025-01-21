@@ -7,11 +7,6 @@ var openedPorts: seq[Socket] = @[]
 proc initRouter*(): Router =
     return Router(routes: @[]);
 
-proc removeRepeatedRoute*(targetRouter: var Router, path: string) = 
-    for r in targetRouter.routes:
-        if r.path == path:
-            targetRouter.routes.delete(targetRouter.routes.find(r))
-
 #[ 
 Available methods for the router:
 - GET
@@ -22,27 +17,21 @@ Available methods for the router:
 - DELETE
 ]#
 proc get*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "GET", handler: handler, description:description))
 
 proc post*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "POST", handler: handler, description:description))
     
 proc put*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "PUT", handler: handler, description:description))
 
 proc head*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "HEAD", handler: handler, description:description))
 
 proc options*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "OPTIONS", handler: handler, description:description))
 
 proc delete*(targetRouter: var Router, path: string, handler: RouteHandler, description:string="") = 
-    targetRouter.removeRepeatedRoute(path)
     targetRouter.routes.add(Route(path: path, httpMethod: "DELETE", handler: handler, description:description))
 
 #[
@@ -104,7 +93,7 @@ proc onCtrlC() {.noconv.} =
 
 setControlCHook(onCtrlC)
 
-proc start*(router: var Router, portNumber: int, verbose:bool=false) {.async.} = 
+proc start*(router: var Router, portNumber: int, verbose:bool=false) = 
     router.running = true;
     let socket = newSocket()
     try: 

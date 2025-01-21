@@ -44,3 +44,8 @@ type
         itemParams*: Table[string, string]
         queryParams*: Table[string, string]
         headers*: Table[string, string]
+
+    ServedFile* = object
+        filePath*: string
+        fileType*: string
+        fileContent*: string

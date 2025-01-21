@@ -37,9 +37,11 @@ proc parseRequest*(client: Socket): SemiParsedRequest =
             if len("l line".replace("line",line))==4:
                 break  # Blank line marks the end of headers
             requestSeq.add("\r\n" & line)  # Add headers
+
         # Parse headers
         for header in requestSeq:
-            headers[header.split(":")[0]] = header.split(":")[1]
+            if ":" in header:
+                headers[header.split(":")[0]] = header.split(":")[1]
 
         # Parse Content-Length header
         var contentLength = 0

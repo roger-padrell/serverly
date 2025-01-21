@@ -269,7 +269,6 @@ proc generateBlocksFromRouter(targetRouter: var Router): string =
 var docString: string
 
 proc docs*(targetRouter: var Router, path: string="/docs") = 
-    targetRouter.removeRepeatedRoute(path)
     docString = """
     <!DOCTYPE html>
     <html>
