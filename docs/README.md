@@ -21,7 +21,7 @@ and it will also install `serverly` if it is not on the device.
 ## Usage and documentation
 Go to the [documentation](https://roger-padrell.github.io/serverly/docs.html) to learn how to use `Serverly`.
 
-## examples
+## Examples
 Go to the [examples page](https://roger-padrell.github.io/serverly/examples.html) to see some examples on how to use `Serverly`.
 
 ## License
