@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.4"
+version       = "1.0.0"
 author        = "Roger Padrell"
 description   = "HTTP serving made eazy"
 license       = "MIT"

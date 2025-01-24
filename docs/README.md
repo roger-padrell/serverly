@@ -1,9 +1,11 @@
 # Serverly
-
 HTTP serving made easy
 
+(A **dependency-less** HTTP server)
+
+
 ## Version
-The current latest version is [v0.1.4](https://github.com/roger-padrell/serverly/releases/tag/v0.1.4) (you cant check it [here](https://github.com/roger-padrell/serverly/releases), if you want).
+The current latest version is [v1.0.0](https://github.com/roger-padrell/serverly/releases/tag/v1.0.0) (you can check it [here](https://github.com/roger-padrell/serverly/releases), if you want).
 
 ## Installation 
 You need nim and nimble, which can be installed [here](https://nim-lang.org/install.html)
@@ -18,6 +20,9 @@ and it will also install `serverly` if it is not on the device.
 
 ## Usage and documentation
 Go to the [documentation](https://roger-padrell.github.io/serverly/docs.html) to learn how to use `Serverly`.
+
+## examples
+Go to the [examples page](https://roger-padrell.github.io/serverly/examples.html) to see some examples on how to use `Serverly`.
 
 ## License
 This project is open source and under the [MIT](https://opensource.org/licenses/MIT) license

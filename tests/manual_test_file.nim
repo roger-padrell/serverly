@@ -1,4 +1,4 @@
-import serverly, unittest, strutils
+import serverly
 
 const port: int = 8080
 

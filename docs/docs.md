@@ -328,9 +328,9 @@ rout.get("/", proc(req: Request, res: Response) =
 ```
 
 ## Static serving
-You can also serve static assets like documents, images or complete directories.
+You can also serve static assets like documents, images, or complete directories.
 
-When working with paths with NIM, you can use `./` (like in `./file.txt`) to access files relative to path where the program is stored, and `$/` (like in `$/file.txt`) to access files relative to the directory where the program is running or has been called.
+When working with paths with NIM, you can use `./` (like in `./file.txt`) to access files relative to path where the program is stored. Use `$/` (like in `$/file.txt`) to access files relative to the directory where the program is running or has been called.
 
 ### Serving single files
 To serve a static file, use `Router.serveSingleFile`:
